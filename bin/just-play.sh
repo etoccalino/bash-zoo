@@ -1,10 +1,18 @@
 #! /bin/bash
 
+#
+# Wrap mplayer to make it "just play" what I tell it to play.
+#
+# Will play "music files" under a directory, a playlist or a single file.
+# To see which files are considered a "music file" see the FORMATS variable.
+#
+
 set -e
 
 ME=$0
 TARGET=$1
-FORMATS="*.ogg *.mp3 *.acc *.OGG *.MP3 *.ACC"
+
+FORMATS="*.ogg *.mp3 *.aac *.OGG *.MP3 *.AAC"
 HINTS="Ogg MPEG"
 
 [ -z "${TARGET}" ] && echo "Usage: ${ME} [ playlist | song file | directory ]"
