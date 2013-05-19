@@ -25,13 +25,13 @@ else
     if [ -f "${TARGET}" ]; then
         # The file might be a music file of a list.
         TARGET_IS_MUSICFILE=false
-        for HINT in HINTS; do
+        for HINT in ${HINTS}; do
             (( $(file "${TARGET}" | grep ${HINT} | wc -l) > 0 )) && TARGET_IS_MUSICFILE=true
         done
 
         if ${TARGET_IS_MUSICFILE} ; then
             # The target is a file: play it.
-            mplayer -quiet ${TARGET_IS_MUSICFILE}
+            mplayer -quiet ${TARGET}
         else
             # The target could still be a playlist... try to play it.
             mplayer -quiet -playlist "${TARGET}"
