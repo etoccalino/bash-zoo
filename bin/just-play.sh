@@ -9,7 +9,7 @@
 
 set -e
 
-ME=$0
+ME=$(basename $0)
 TARGET=$1
 
 FORMATS="*.ogg *.mp3 *.aac *.OGG *.MP3 *.AAC"
