@@ -15,7 +15,7 @@ TARGET=$1
 FORMATS="*.ogg *.mp3 *.aac *.OGG *.MP3 *.AAC"
 HINTS="Ogg MPEG"
 
-[ -z "${TARGET}" ] && echo "Usage: ${ME} [ playlist | song file | directory ]"
+[ "-h" = "${TARGET}" ] || [ "--help" = "${TARGET}" ] || [ -z "${TARGET}" ] && echo "Usage: ${ME} [ playlist | song file | directory ]"
 
 if [ -d "${TARGET}" ]; then
     # The target is a directory: play all "music" files in it, if there are any.
