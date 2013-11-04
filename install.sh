@@ -39,3 +39,10 @@ done
 #
 # TODO: Install the emacs configs
 #
+
+#
+# Final messages
+#
+echo ""
+echo "NOTES:"
+find messages -type f | xargs cat
