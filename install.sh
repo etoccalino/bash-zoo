@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -e
+
 #
 # install.sh
 #
@@ -22,10 +24,16 @@ fi
 #
 ls -a env | tail -n +3 | grep -v \~ | while read dotfile; do
 
-    if [ -n "$(diff --brief env/$dotfile ~/$dotfile)" ]; then
-        echo -n "~/$dotfile exists, appending (you should take a look at it)... "
-        cat env/$dotfile >> ~/$dotfile
+    if [ -e ~/$dotfile ] ; then
+        # If it exists already, append if there's something different, skip otherwise
+        if [ -n "$(diff --brief env/$dotfile ~/$dotfile)" ]; then
+            echo -n "~/$dotfile exists but differs, appending (you should take a look at it)... "
+            cat env/$dotfile >> ~/$dotfile
+        else
+            echo -n "skipping ~/$dotfile..."
+        fi
     else
+        # If it does not exist, copy it
         echo -n "copying to ~/$dotfile... "
         cp -f env/$dotfile ~/$dotfile
     fi

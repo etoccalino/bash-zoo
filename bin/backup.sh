@@ -15,9 +15,19 @@
 TO_BACKUP="$HOME/Documents $HOME/Pictures"
 
 [ -n "$(which notify-send)" ] && notify-send -i low "Started backup..."
-echo -n "starting backup... "
+echo "starting backup... "
 
-obnam backup ${TO_BACKUP}
+for target in ${TO_BACKUP} ; do
+
+    obnam backup ${target}
+
+    if [ $? -ne 0 ] ; then
+        MSG="Backup failed. Check the logs at /tmp/obnam.log"
+        [ -n "$(which notify-send)" ] && notify-send -i low ${MSG}
+        echo ${MSG}
+        exit 1
+    fi
+done
 
 echo "done."
 [ -n "$(which notify-send)" ] && notify-send -i low "Backup done."
