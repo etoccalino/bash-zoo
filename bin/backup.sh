@@ -14,7 +14,13 @@
 
 TO_BACKUP="$HOME/Documents $HOME/Pictures"
 
+[ -n "$(which notify-send)" ] && notify-send -i low "Started backup..."
+echo -n "starting backup... "
+
 obnam backup ${TO_BACKUP}
+
+echo "done."
+[ -n "$(which notify-send)" ] && notify-send -i low "Backup done."
 
 #
 # To restore the backups

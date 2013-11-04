@@ -6,9 +6,6 @@
 # Meant to run from the root of the zoo.
 #
 
-set -x
-set -e
-
 #
 # Install the ~/bin programs; this will be added to the PATH
 #
