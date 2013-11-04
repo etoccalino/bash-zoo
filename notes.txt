@@ -1,0 +1,1 @@
+I'm putting environment variables in ~/.bashrc, and sourcing it from ~/.bash_profile. This defeats the purpose of two files (.bashrc for login terminals, .bash_profile for interactive non-login terminals), but keeps things simple.

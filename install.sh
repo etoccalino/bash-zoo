@@ -45,4 +45,4 @@ done
 #
 echo ""
 echo "NOTES:"
-find messages -type f | xargs cat
+find messages -type f | grep -v \~ | xargs cat
