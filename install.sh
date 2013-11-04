@@ -20,7 +20,7 @@ fi
 #
 # Install the dot-files, appending to existing files
 #
-ls -a env | tail -n +3 | while read dotfile; do
+ls -a env | tail -n +3 | grep -v \~ | while read dotfile; do
 
     if [ -n "$(diff --brief env/$dotfile ~/$dotfile)" ]; then
         echo -n "~/$dotfile exists, appending (you should take a look at it)... "

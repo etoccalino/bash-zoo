@@ -14,3 +14,5 @@ export EDITOR="emacs -nw"
 
 # If in a git repository, display the current branch in green.
 PS1='\h:\w$(__git_ps1 "\[\e[32m\][%s]\[\e[0m\]")$ '
+
+export PATH="$HOME/bin:$PATH"
