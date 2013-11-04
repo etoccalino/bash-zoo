@@ -13,11 +13,11 @@ set -e
 # Install the ~/bin programs; this will be added to the PATH
 #
 if [ -d ~/bin ] ; then
+    echo "skipping the ~/bin directory (you'll have to copy it manually)"
+else
     echo -n "copying to ~/bin... "
     cp -r bin ~/bin
     echo "done."
-else
-    echo "skipping the ~/bin directory (you'll have to copy it manually)"
 fi
 
 #
