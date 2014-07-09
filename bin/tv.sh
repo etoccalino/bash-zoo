@@ -1,0 +1,3 @@
+#! /bin/bash
+
+xrandr --output VGA1 --mode 1024x768 --same-as LVDS1
