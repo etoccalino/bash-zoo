@@ -1,0 +1,126 @@
+#! /bin/bash
+
+set -e
+
+# mount-less [ -h ] [ -u ]
+#
+# Mount the encrypted directory for local access.
+# Use "-u" option to un-mount.
+#
+# Program configuration:
+#
+# REMOTE_ENC_DIR -- encrypted directory remote path.
+# ENC_DIR -- local encrypted directory absolute path.
+# DIR -- local unencrypted directory absolute path.
+
+function usage {
+    local PROGRAM=$(basename ${0})
+
+    echo "${PROGRAM} [ -h | -u ]"
+    echo
+    echo "Mount the encrypted directory for local access."
+    echo "Use \"-u\" option to un-mount."
+    echo
+    echo "Program configuration:"
+    echo
+    echo "REMOTE_ENC_DIR -- encrypted directory remote path."
+    echo "ENC_DIR -- local encrypted directory absolute path."
+    echo "DIR -- local unencrypted directory absolute path."
+}
+
+function is_empty_p {
+    (( $(ls -a -1 ${1} | wc -l) == 2 )) && return 0 || return 1
+}
+
+function info_msg { echo "INFO: ${1}" ; }
+function warn_msg { echo "WARN: ${1}" ; }
+function error_msg { echo "ERROR: ${1}" ; }
+
+function mount {
+    # Provide encrypted access to remote encrypted directory.
+    #
+    # Mount the remote encrypted directory to a local encrypted directory via
+    # `sshfs`, then mount the latter via `encfs` for unencrypted access. Create
+    # both local directories, in necessary.
+    #
+    # Positional Parameters:
+    # * full path to remote encrypted directory, e.i. user@server:directory
+    # * absolute path to use for local directory for unencrypted access
+    # * absolute path to use for encrypted local directory (preferibly hidden
+    #   to the user)
+    #
+    local REMOTE_DIR="${1}"
+    local DIR="${2}"
+    local ENC_DIR="${3}"
+
+    info_msg "creating local directories"
+    [ -d ${DIR} ] || mkdir ${DIR}
+    [ -d ${ENC_DIR} ] || mkdir ${ENC_DIR}
+
+    info_msg "connecting to remote server"
+    sshfs ${REMOTE_DIR} ${ENC_DIR} -o uid=$(id -u) -o gid=$(id -g)
+
+    info_msg "mounting remote directory, unencrypted, to ${DIR}"
+    encfs ${ENC_DIR} ${DIR}
+}
+
+function umount {
+    # Disable access to remote directory, and remove unused local directories.
+    #
+    # Un-mount the remote encrypted directory and the local unencrypted
+    # directory, then remove local unused local directories.
+    #
+    # Errors out during clean-up if local directories have files in them.
+    #
+    # Positional Parameters:
+    # * absolute path to use for local directory for unencrypted access
+    # * absolute path to use for encrypted local directory (preferibly hidden
+    #   to the user)
+    #
+    local DIR="${1}"
+    local ENC_DIR="${2}"
+
+    info_msg "unmounting local directory"
+    fusermount -u ${DIR} || {
+        echo "WARN: couldn't unmount local directory. Skipping..."
+    }
+
+    info_msg "disconnecting from server"
+    fusermount -u ${ENC_DIR} || {
+        echo "WARN: couldn't disconnect. Skipping..."
+    }
+
+    info_msg "removing unused local directories"
+    if ! is_empty_p ${DIR} || ! is_empty_p ${ENC_DIR}
+    then
+        echo "WARN: the encrypted directory ${ENC_DIR} might not be empty"
+        echo "WARN: the unencrypted directory ${DIR} might not be empty"
+        echo "ERROR: didn't remove local directories"
+        exit 1
+    else
+        rmdir ${DIR} ${ENC_DIR}
+    fi
+}
+
+#
+#
+
+# Parse environment configuration, or use default values.
+: ${REMOTE_ENC_DIR:=""}
+: ${ENC_DIR:="/tmp/less.encrypted"}
+: ${DIR:="$HOME/less"}
+
+# Parse program arguments and run.
+if [[ "${1}" == "-h" ]] ; then
+
+    usage
+
+elif [[ "${1}" == "-u" ]] ; then
+
+    umount ${DIR} ${ENC_DIR}
+
+else
+
+    mount ${REMOTE_ENC_DIR} ${DIR} ${ENC_DIR}
+
+fi
