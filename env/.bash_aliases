@@ -11,6 +11,7 @@ alias cfind="find . -name '*.c' -o -name '*.cpp' -o -name "*.h" | xargs grep --c
 alias lookfor="~/bin/lookfor.sh"
 alias e="emacs -nw"
 alias o="gnome-open"
+alias l="~/bin/shoot.sh"
 
 alias g='git'
 alias s='git status --short'
