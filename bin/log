@@ -2,17 +2,46 @@
 
 # TODO:
 # * consider using boot performance options (e.g. "-q")
+# * add support to encryption, somehow
+# * break logs at 5:00hs local, rather than midnight
 
 # An educated guess: was on 'us' map
 
-LOG_DIR="~/.logs"
+LOG_DIR="$HOME/.logs"
 TODAY_LOG_FILE="$(date +%Y%m%d).log"
 TODAY_LOG="${LOG_DIR}/${TODAY_LOG_FILE}"
 
-# Switch to 'latam' keymap.
-sudo loadkeys ~/bin/latam.map.gz
+KEYMAP_LATAM="$HOME/bin/latam.map.gz"
+KEYMAP_US="$HOME/bin/us.map.gz"
+XKB_KEYMAP_LATAM="latam"
+XKB_KEYMAP_US="us"
 
-emacs ${TODAY_LOG} -f end-of-buffer -f my-write-mode
+function switch_keymap {
+    local KEYMAP_CLUE="$1"
+
+    if [ -n "$DISPLAY" ] ; then
+
+        if [ "${KEYMAP_CLUE}" = "latam" ] ; then
+            setxkbmap ${XKB_KEYMAP_LATAM}
+        else
+            setxkbmap ${XKB_KEYMAP_US}
+        fi
+
+    else
+
+        if [ "${KEYMAP_CLUE}" = "latam" ] ; then
+            sudo loadkeys ${KEYMAP_LATAM}
+        else
+            sudo loadkeys ${KEYMAP_US}
+        fi
+
+    fi
+}
+
+# Switch to 'latam' keymap.
+switch_keymap latam
+
+emacs ${TODAY_LOG} -f end-of-buffer -f my-write-mode -nw
 
 # Switch back to 'us' keymap.
-sudo loadkeys ~/bin/us.map.gz
+switch_keymap us
