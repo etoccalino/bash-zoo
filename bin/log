@@ -1,0 +1,18 @@
+#! /bin/bash
+
+# TODO:
+# * consider using boot performance options (e.g. "-q")
+
+# An educated guess: was on 'us' map
+
+LOG_DIR="~/.logs"
+TODAY_LOG_FILE="$(date +%Y%m%d).log"
+TODAY_LOG="${LOG_DIR}/${TODAY_LOG_FILE}"
+
+# Switch to 'latam' keymap.
+sudo loadkeys ~/bin/latam.map.gz
+
+emacs ${TODAY_LOG} -f end-of-buffer -f my-write-mode
+
+# Switch back to 'us' keymap.
+sudo loadkeys ~/bin/us.map.gz
