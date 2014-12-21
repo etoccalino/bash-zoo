@@ -1,0 +1,6 @@
+---
+You will want to change the defaults for the 'log' program config:
+
+  DEFAULT_SYNC_SERVER=""       # Sync-host for the logs.
+  DEFAULT_SYNC_USER=""         # User for the sync-host.
+  DEFAULT_LOCAL_LOGS_DIR=""    # Directory where the local copy of the logs live.
