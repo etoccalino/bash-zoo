@@ -31,7 +31,7 @@ function msg {
 # Usage message.
 function usage {
     local ME="$(basename ${0})"
-    echo "Usage: ${ME} [ -h | full | incr | verify | restore ]"
+    echo "Usage: ${ME} [ -h | full | incr | verify | restore | what | cleanup ]"
     echo ""
     echo "Run backup routine... see source code for env config"
     echo "By default, run an incremental backup."
@@ -69,63 +69,64 @@ function backup {
 
 #
 # Parse environment configuration, or use default values.
-: ${REMOTE_DIR:="scp://rsync.net/backups/netbook"}
-: ${TO_BACKUP:="bin docs tmp/configs etoccalino.com"}
-: ${KEY_ID:="A85D625F"}
+: ${REMOTE_DIR:="scp://rsync.net/backups/redo"}
+: ${TO_BACKUP:="bin tmp/configs"}
+: ${KEY_ID:="FC5430FC"}
 : ${LOG_FILE:="/tmp/backup.log"}
 : ${RESTORE_DIR:="/tmp/backup"}
 
 #
 # Execute the program
 #
+case "${1}" in
 
-if [[ "${1}" == "-h" ]] ; then
+     full)
+          msg "Collecting configs..."
+          collect-configs.sh
 
-    usage
-    exit 0;
+          msg "Started full backup..."
+          backup "full" "${TO_BACKUP}" ${KEY_ID} ${LOG_FILE} ${HOME} ${REMOTE_DIR}
+          msg "Full backup completed."
+     ;;
+     incremental|incr|"")
+          msg "Collecting configs..."
+          collect-configs.sh
 
-fi
+          msg "Started incremental backup..."
+          backup "incr" "${TO_BACKUP}" ${KEY_ID} ${LOG_FILE} ${HOME} ${REMOTE_DIR}
+          msg "Incremental backup completed."
+     ;;
+     verify)
+          msg "Collecting configs..."
+          collect-configs.sh
 
-#
-# Interpret the actions.
-#
-if [[ "${1}" == "full" ]] ; then
+          msg "Started full verification..."
+          backup "verify" "${TO_BACKUP}" ${KEY_ID} ${LOG_FILE} ${REMOTE_DIR} ${HOME}
+     ;;
+     restore)
+          msg "Started restoration of last backup..."
+          backup "restore" "${TO_BACKUP}" ${KEY_ID} ${LOG_FILE} ${REMOTE_DIR} ${RESTORE_DIR}
+          msg "Completed restoration of latest backup to: ${RESTORE_DIR}"
+     ;;
+     cleanup)
+          msg "Cleaning up old backups..."
+          duplicity remove-older-than 30D -v9 --encrypt-key=${KEY_ID} --force ${REMOTE_DIR}
+          msg "Done: backups older than 30 days (not counting you last full backup) have been deleted"
+     ;;
+     what)
+          msg "To backup: ${TO_BACKUP}"
+          exit 0
+     ;;
+     -h|--help)
+          usage
+          exit 0
+     ;;
+     *)
+          usage
+          msg "ERROR: bad parameters."
+          exit 1
+esac
 
-    msg "Collecting configs..."
-    collect-configs.sh
-    msg "Started full backup..."
-    backup "full" "${TO_BACKUP}" ${KEY_ID} ${LOG_FILE} ${HOME} ${REMOTE_DIR}
-    msg "Full backup completed."
-
-elif [[ "${1}" == "incr" ]] || [[ "${1}" == "" ]] ; then
-    # "incr" is assumed on empty parameter.
-
-    msg "Collecting configs..."
-    collect-configs.sh
-    msg "Started incremental backup..."
-    backup "incr" "${TO_BACKUP}" ${KEY_ID} ${LOG_FILE} ${HOME} ${REMOTE_DIR}
-    msg "Incremental backup completed."
-
-elif [[ "${1}" == "verify" ]] ; then
-
-    msg "Collecting configs..."
-    collect-configs.sh
-    msg "Started full verification..."
-    backup "verify" "${TO_BACKUP}" ${KEY_ID} ${LOG_FILE} ${REMOTE_DIR} ${HOME}
-
-elif [[ "${1}" == "restore" ]] ; then
-
-    msg "Started restoration of last backup..."
-    backup "restore" "${TO_BACKUP}" ${KEY_ID} ${LOG_FILE} ${REMOTE_DIR} ${RESTORE_DIR}
-    msg "Completed restoration of latest backup to: ${RESTORE_DIR}"
-
-else
-
-    usage
-    msg "ERROR: bad parameters."
-    exit 1
-
-fi
 
 msg "Log is kept at ${LOG_FILE}"
 

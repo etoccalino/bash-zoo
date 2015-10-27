@@ -9,8 +9,11 @@ if [ $(whoami) != "root" ] ; then
 fi
 
 # Ensure rpc-idmapd.service and rpc-mountd.service are running.
-systemctl restart rpc-idmapd
-systemctl restart rpc-mountd
+# systemctl restart rpc-idmapd
+# systemctl restart rpc-mountd
+sudo systemctl restart nfs-server.service
+
+
 
 # Mount the movies, TV shows and music partitions to NFS4.
 mount --bind /home/sedsick/media/pi/movies /srv/nfs4/movies

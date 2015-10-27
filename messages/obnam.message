@@ -1,5 +1,0 @@
----
-You'll have to have a valid GPG key in this machine, and have it referenced in ~/.obnam.conf with something like:
-       [config]
-       encrypt-with = CAFEBABE
-The first time you are going to backup the box, it might take some time... be patient.

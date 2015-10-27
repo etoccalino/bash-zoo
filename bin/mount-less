@@ -106,7 +106,7 @@ function umount {
 #
 
 # Parse environment configuration, or use default values.
-: ${REMOTE_ENC_DIR:=""}
+: ${REMOTE_ENC_DIR:="2189@usw-s002.rsync.net:less"}
 : ${ENC_DIR:="/tmp/less.encrypted"}
 : ${DIR:="$HOME/less"}
 

@@ -1,23 +1,92 @@
 #! /bin/bash
 
+# Requires:
+#   git
+#   emacs
+#   setxkbmap (part of X)
+#   loadkeys
+
+
+# To setup a local logs repository:
+#
+#   mkdir -p ${LOCAL_LOGS_DIR}
+#   cd ${LOCAL_LOGS_DIR}
+#   git init
+#   git add remote sync ${SYNC_USER}@${SYNC_SERVER}:${SYNC_DIR}
+#   git pull sync master
+#   git push --set-upstream sync master
+#
+# ...where SYNC_DIR is the directory where the logs live in the sync-host, relative to user's home.
+#
+# To setup the remote sync repository:
+#
+#   ssh ${SYNC_SERVER}@${SYNC_USER}
+#   mkdir -p ${SYNC_DIR}
+#   git init --bare
+#   echo "*~" >> .gitignore
+
 # TODO:
-# * consider using boot performance options (e.g. "-q")
 # * add support to encryption, somehow
 # * break logs at 5:00hs local, rather than midnight
 
-# An educated guess: was on 'us' map
+# Default confirguration parameters. Any of this values can be passed as environment variables.
+SYNC_SERVER="usw-s002.rsync.net" # Sync-host for the logs.
+SYNC_USER="2189"                 # User for the sync-host.
+LOCAL_LOGS_DIR="$HOME/.logs"     # Directory where the local copy of the logs live.
+IS_WINDOWED=true                 # Whether to use "-nw" or not for Emacs.
 
-LOG_DIR="$HOME/.logs"
-TODAY_LOG_FILE="$(date +%Y%m%d).log"
-TODAY_LOG="${LOG_DIR}/${TODAY_LOG_FILE}"
 
-KEYMAP_LATAM="$HOME/bin/latam.map.gz"
-KEYMAP_US="$HOME/bin/us.map.gz"
-XKB_KEYMAP_LATAM="latam"
-XKB_KEYMAP_US="us"
+# Check the remote sync server is reachable.
+function is_sync_server_reachable {
+    local REMOTE=${1}
 
+    ping -c 1 ${REMOTE} &>/dev/null
+    if (( $? == 0 )) ; then
+
+        echo "sync server is reachable."
+        return 0
+
+    else
+
+        echo "sync server is not reachable."
+        return 1
+
+    fi
+}
+
+# Consolidate entry to logs.
+#
+# Assumes we're at LOCAL_LOGS_DIR.
+function add_and_commit {
+    local GIT_MSG="$(date +'%B, %A %d, %Y')"
+
+    git add .
+
+    # Deactivate quit-on-error, since and empty entry is fine.
+    set +e
+
+    git commit -m "${GIT_MSG}"
+
+    # Re-activate quit-on-error.
+    set -e
+}
+
+function get_today_logname {
+    local LOG_DIR="${1}"
+    local TODAY_LOG_FILENAME="$(date +%Y%m%d).log"
+
+    echo "${LOG_DIR}/${TODAY_LOG_FILENAME}"
+}
+
+# Guess: the user keyboad is in 'us' keymap.
 function switch_keymap {
-    local KEYMAP_CLUE="$1"
+    # Constants
+    local KEYMAP_LATAM="$HOME/bin/latam.map.gz"
+    local KEYMAP_US="$HOME/bin/us.map.gz"
+    local XKB_KEYMAP_LATAM="latam"
+    local XKB_KEYMAP_US="us"
+    # Arguments
+    local KEYMAP_CLUE="${1}"
 
     if [ -n "$DISPLAY" ] ; then
 
@@ -38,10 +107,33 @@ function switch_keymap {
     fi
 }
 
+
+#
+# Main program.
+#
+
+# Configuration: use environment variables, or use defaults.
+: ${SYNC_SERVER:="${SYNC_SERVER}"}
+: ${SYNC_USER:="${SYNC_USER}"}
+: ${LOCAL_LOGS_DIR:="${LOCAL_LOGS_DIR}"}
+
+# Move to the local copy of the logs.
+cd ${LOCAL_LOGS_DIR}
+
+# Sync if available, to avoid conflicts.
+is_sync_server_reachable ${SYNC_SERVER} && git pull
+
 # Switch to 'latam' keymap.
 switch_keymap latam
 
-emacs ${TODAY_LOG} -f end-of-buffer -f my-write-mode -nw
+# Start the editor for the log.
+emacs $(get_today_logname ${LOCAL_LOGS_DIR}) -f end-of-buffer -f my-write-mode $([ "x${IS_WINDOWED}" = "x" ] && echo "-nw")
+
+# Consolidate the new entry.
+add_and_commit
 
 # Switch back to 'us' keymap.
 switch_keymap us
+
+# Sync if available, to avoid conflicts.
+is_sync_server_reachable ${SYNC_SERVER} && git push
