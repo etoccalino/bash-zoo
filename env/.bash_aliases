@@ -9,9 +9,16 @@ alias rfind="find . -name '*.rb' -o -name '*.html' | xargs grep --color -n"
 alias cfind="find . -name '*.c' -o -name '*.cpp' -o -name "*.h" | xargs grep --color -n"
 
 alias lookfor="~/bin/lookfor.sh"
-alias e="emacs -nw"
+alias e="emacs -nw --no-splash"
 alias o="gnome-open"
+alias c="xclip"
 alias l="~/bin/shoot.sh"
+alias wifi='sudo wifi-menu wlp3s0'
+alias lan='sudo dhcpcd enp1s0'
+alias skype='~/bin/shoot.sh apulse32 skype'
+alias cups='sudo systemctl start org.cups.cupsd.service'
+alias dc=dropbox-cli
+alias nload="nload -i 3000 -o 1000 -u K wlp3s0"
 
 alias g='git'
 alias s='git status --short'
