@@ -1,5 +1,5 @@
 ---
-You will want to change the defaults for the 'log' program config:
+You will want to change the defaults for the 'log' program (in ~/bin/log):
 
   DEFAULT_SYNC_SERVER=""       # Sync-host for the logs.
   DEFAULT_SYNC_USER=""         # User for the sync-host.
