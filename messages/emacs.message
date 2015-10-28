@@ -1,0 +1,10 @@
+---
+Use the "emacs env" git repository in https://github.com/etoccalino/emacs-env to copy ~/.emacs and ~/.emacs.d
+Example:
+
+  git git@github.com/etoccalino/emacs-env.git
+  cd emacs-env
+  cp -r .emacs .emacs.d
+  cat REQUIREMENTS
+
+Remember to checkout the REQUIREMENTS file and ensure you meet the dependencies.
