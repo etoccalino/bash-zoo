@@ -5,8 +5,9 @@ set -e
 #
 # install.sh
 #
-# Meant to run from the root of the zoo.
-#
+
+# Run from root of the bash-zoo
+cd $(dirname ${0})
 
 #
 # Install the ~/bin programs; this will be added to the PATH
@@ -42,12 +43,8 @@ ls -a env | tail -n +3 | grep -v \~ | while read dotfile; do
 done
 
 #
-# TODO: Install the emacs configs
-#
-
-#
 # Final messages
 #
 echo ""
 echo "NOTES:"
-find messages -type f | grep -v \~ | xargs cat
+find messages -type f ! -name '*~' -exec cat {} \;
