@@ -9,14 +9,17 @@ set -e
 # Run from root of the bash-zoo
 cd $(dirname ${0})
 
+# Replace $HOME and avoid using ~ for easier debugging
+HOME="$HOME"
+
 #
-# Install the ~/bin programs; this will be added to the PATH
+# Install the $HOME/bin programs; this will be added to the PATH
 #
-if [ -d ~/bin ] ; then
-    echo "skipping the ~/bin directory (you'll have to copy it manually)"
+if [ -d $HOME/bin ] ; then
+    echo "skipping the $HOME/bin directory (you'll have to copy it manually)"
 else
-    echo -n "copying to ~/bin... "
-    cp -r bin ~/bin
+    echo -n "copying to $HOME/bin... "
+    cp -r bin $HOME/bin
     echo "done."
 fi
 
@@ -25,18 +28,19 @@ fi
 #
 ls -a env | tail -n +3 | grep -v \~ | while read dotfile; do
 
-    if [ -e ~/$dotfile ] ; then
+    if [ -e $HOME/${dotfile} ] ; then
         # If it exists already, append if there's something different, skip otherwise
-        if [ -n "$(diff --brief env/$dotfile ~/$dotfile)" ]; then
-            echo -n "~/$dotfile exists but differs, appending (you should take a look at it)... "
-            cat env/$dotfile >> ~/$dotfile
+        if [ -n "$(diff --brief env/${dotfile} $HOME/${dotfile})" ]; then
+            echo -n "$HOME/${dotfile} exists but differs, appending (you should take a look at it)... "
+            echo -e -n "\n\n#\n#\n#\n\n" >> $HOME/${dotfile}
+            cat env/${dotfile} >> $HOME/${dotfile}
         else
-            echo -n "skipping ~/$dotfile..."
+            echo -n "skipping $HOME/${dotfile}..."
         fi
     else
         # If it does not exist, copy it
-        echo -n "copying to ~/$dotfile... "
-        cp -f env/$dotfile ~/$dotfile
+        echo -n "copying to $HOME/${dotfile}... "
+        cp -f env/${dotfile} $HOME/${dotfile}
     fi
     echo "done."
 
