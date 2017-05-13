@@ -12,8 +12,9 @@ set -e
 ME=$(basename $0)
 TARGET=$1
 
-FORMATS="*.ogg *.mp3 *.aac *.OGG *.MP3 *.AAC"
-HINTS="Ogg MPEG"
+_FORMATS="*.ogg *.mp3 *.aac *.mp4"
+FORMATS="$_FORMATS $(echo $_FORMATS | awk '{print toupper ($0)}')"
+HINTS="Ogg MPEG MP4"
 
 [ "-h" = "${TARGET}" ] || [ "--help" = "${TARGET}" ] || [ -z "${TARGET}" ] && echo "Usage: ${ME} [ playlist | song file | directory ]"
 
