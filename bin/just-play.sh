@@ -32,7 +32,7 @@ else
 
         if ${TARGET_IS_MUSICFILE} ; then
             # The target is a file: play it.
-            mplayer -quiet ${TARGET}
+            mplayer -quiet "${TARGET}"
         else
             # The target could still be a playlist... try to play it.
             mplayer -quiet -playlist "${TARGET}"
