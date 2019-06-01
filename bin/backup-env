@@ -29,8 +29,10 @@ BACKUP_NAME="$(date -I)-$(hostname).tar.bz2"
 BACKUP_INDEX_NAME="$(date -I)-$(hostname).list.txt"
 
 # Create the backup and its index
-tar -cjf $TMPDIR/$BACKUP_NAME $TO_BACKUP
+echo "Generating index file..."
 find $TO_BACKUP -type f > $TMPDIR/$BACKUP_INDEX_NAME
+echo "Preparing the backup tar ball..."
+tar -cjf $TMPDIR/$BACKUP_NAME $TO_BACKUP
 
 # Upload to drive
 echo "Uploading the index file..."
