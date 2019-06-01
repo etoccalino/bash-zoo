@@ -1,0 +1,40 @@
+#! /bin/bash
+
+# Depends on the "gdrive" tool to upload to Google Drive
+# see: https://olivermarshall.net/how-to-upload-a-file-to-google-drive-from-the-command-line/
+
+# Make this a list of files, dirs and globs relative to my home
+# TO_BACKUP=".bash* bin/ .emacs* .emacs.d .ssh/ .profile .config/i3*"
+TO_BACKUP="$1"
+
+# The Drive ID of the directory. Found this `gdrive list`
+# DEST_ID="1ipaPkDRx2GuPmY2HfEbUlUpjDbh8-Qej"
+DEST_ID="$2"
+
+###############################################################################
+
+set -e
+
+cd "$HOME"
+
+TMPDIR=$(mktemp -d)
+
+function clean_up () {
+    echo "Deleting the temp directory."
+    rm -fr $TMPDIR
+}
+trap clean_up EXIT
+
+BACKUP_NAME="$(date -I)-$(hostname).tar.bz2"
+BACKUP_INDEX_NAME="$(date -I)-$(hostname).list.txt"
+
+# Create the backup and its index
+tar -cjf $TMPDIR/$BACKUP_NAME $TO_BACKUP
+find $TO_BACKUP -type f > $TMPDIR/$BACKUP_INDEX_NAME
+
+# Upload to drive
+echo "Uploading the index file..."
+gdrive upload -p $DEST_ID $TMPDIR/$BACKUP_INDEX_NAME
+echo "done. Uploading the backup tarball..."
+gdrive upload -p $DEST_ID $TMPDIR/$BACKUP_NAME
+echo "Done."
