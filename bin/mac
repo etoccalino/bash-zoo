@@ -1,0 +1,24 @@
+#! /bin/bash
+
+RESOLUTION_MAC="1680x1050"
+RESOLUTION_FIERRO="2560x1080"
+ON_OFF="on"
+
+function usage() {
+    echo "$0 [ --on | --off ]"
+    echo ""
+    echo "Change screen resolution to be more suitable to my Mac."
+    echo "If invoked without flags, it assumes '--on'."
+    exit 2
+}
+
+case "$1" in
+    --off) ON_OFF="off" ;;
+    --on ) ON_OFF="on"  ;;
+    *  ) usage        ;;
+esac
+
+RES=$RESOLUTION_MAC
+[ "$ON_OFF" == "off" ] && RES=$RESOLUTION_FIERRO
+
+xrandr --output HDMI-0 --mode $RES

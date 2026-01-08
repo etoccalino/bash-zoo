@@ -1,0 +1,6 @@
+#! /bin/bash
+
+# To be used in emacs by launching it via M-!
+
+cd ~/programming/dusty/markbot/web/portal-ui
+find . \( -path ./.next -prune -o -path ./node_modules -prune \) -o -type f -name "*.[jt]s" -print0 | xargs -0 etags -o TAGS -a

@@ -1,0 +1,11 @@
+#! /bin/bash
+
+CURRENT_MODE="$(sudo /usr/lib/gamemode/cpugovctl get)"
+TARGET_MODE="performance"
+if [ "$CURRENT_MODE" = "performance" ] ; then
+    TARGET_MODE="powersave"
+fi
+
+echo "Current mode is '$CURRENT_MODE'. Toggling to $TARGET_MODE."
+sudo /usr/lib/gamemode/cpugovctl set $TARGET_MODE
+echo "Current mode is '$(sudo /usr/lib/gamemode/cpugovctl get)'."

@@ -1,0 +1,63 @@
+#! /bin/env python
+
+import argparse
+
+
+DEFAULT_PESOS = 1200.0
+DEFAULT_ROUNDING = 1
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--pesos', default=DEFAULT_PESOS, help=f'$/USD (defaults to {DEFAULT_PESOS})')
+    parser.add_argument('-r', '--rounding', type=int, default=DEFAULT_ROUNDING, help=f'decimals to round to (defaults to {DEFAULT_ROUNDING})')
+    return parser.parse_args()
+
+
+def parse_money_number(s):
+    s = s.strip().lower()
+    if not s:
+        raise TypeError(f'Empty-ish value "{s}"')
+
+    # Interpret the suffix "k" as unit of thousands
+    factor = 1
+    if s.endswith('k'):
+        factor = 1000
+        s = s[:-1]
+
+    # Interpret the prefix "d" as dollars to be converted back
+    is_pesos = True
+    if s.startswith('d'):
+        is_pesos = False
+        s = s[1:]
+
+    try:
+        return float(s) * factor, is_pesos
+    except ValueError:
+        raise ValueError(f'Invalid value "{s}"')
+    except Exception as e:
+        error = f'unknown error while parsing "{s}".'
+        if e.args[0]:
+            error += f' Error: {e.args[0]}'
+        RuntimeError(error)
+
+
+def loop(pesos, rounding):
+    while True:
+        s = input()
+        try:
+            number, is_pesos = parse_money_number(s)
+            result = round(number / pesos, rounding)
+            if not is_pesos:
+                result = round(number * pesos, rounding)
+            print(f'==> {result}')
+        except Exception as error:
+            # Don't break the loop, just print the error
+            print(error)
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    try:
+        loop(args.pesos, args.rounding)
+    except (KeyboardInterrupt, EOFError):
+        exit(0)

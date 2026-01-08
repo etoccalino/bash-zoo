@@ -1,0 +1,6 @@
+#! /bin/bash
+
+# To be used in emacs by launching it via M-!
+
+cd ~/programming/dusty/markbot/web/portal-api
+find -type f -name "*.go" -print0 | xargs -0 etags -o TAGS -a -l go

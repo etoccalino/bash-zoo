@@ -1,0 +1,10 @@
+#! /bin/bash
+
+# export MESA_GL_VERSION_OVERRIDE="3.3COMPAT"
+# cd "/home/etoccalino/.wineBattleBrothers/drive_c/GOG Games/Battle Brothers/win32"
+# env WINEDEBUG=-all WINEPREFIX=~/.wineBattleBrothers wine BattleBrothers.exe
+
+/home/etoccalino/.local/share/lutris/runners/wine/lutris-fshack-7.1-x86_64/bin/wine "/home/etoccalino/games/battle-brothers/drive_c/GOG Games/Battle Brothers/win32/BattleBrothers.exe"
+
+# Seeds 2022-03-14
+# WYUPZMNHQD from https://www.reddit.com/r/BattleBrothers/comments/oapx9p/wyupzmnhqd_is_the_absolute_best_battle_brother/
